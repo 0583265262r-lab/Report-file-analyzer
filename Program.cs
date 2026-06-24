@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.Serialization.Formatters;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace reportAnalyze;
 enum ReportType {Collect,Analyze,Recon,Intel}
@@ -16,7 +17,11 @@ class Analyze
         double[] Score = new double[MAX_REPORTS];
         string[] Status = new string[MAX_REPORTS];
         LoadFile(path);
-        ProcessReports(path,UnitName,ReportType,Priority,Score,Status);
+        int numCurrect = ProcessReports(path,UnitName,ReportType,Priority,Score,Status);
+        CalculateAverage(numCurrect, Score);
+        FindMaxScore(Score);
+        FindMinScore(numCurrect, Score);
+        
     }
     static string[]? LoadFile(string path)
     {
@@ -35,9 +40,9 @@ class Analyze
         }
         return readTetx;
     }
-    static void ProcessReports(string filePath,string[]unitName, string[] reportType, int[] priority, double[] score, string[] status)
+    static int ProcessReports(string filePath,string[]unitName, string[] reportType, int[] priority, double[] score, string[] status)
     {
-        
+        int countCurrectLine = 0;
         string[] currentdata = LoadFile(filePath);
         int numOfLins = currentdata.Length;
 
@@ -47,21 +52,24 @@ class Analyze
 
             string[] parts = currentdata[i].Split(",");
             if (parts.Length != 5)
-            {continue;}
+            {
+                i -= 1;
+                continue;}
             if (parts[0].Trim()=="")
-            { continue;}
+            {
+                i -= 1; continue;}
             if (!Enum.TryParse(parts[1], true, out ReportType newData))
-            {continue;}
+            { i -= 1; continue;}
             if (!int.TryParse(parts[2], out int newPriority))
-            { continue;}
+            { i -= 1; continue;}
             if (newPriority<1 | newPriority>5)
-            {continue;}
+            { i -= 1; continue;}
             if (!double.TryParse(parts[3],out double newScore))
-            {continue;}
+            { i -= 1; continue;}
             if (newScore<0.0 | newScore>100.0)
-            {continue;}
+            { i -= 1; continue;}
             if (!Enum.TryParse(parts[4], true, out Status newStatus))
-            {continue;}
+            { i -= 1; continue; }
             else
             {
                 unitName[i] = parts[0].Trim();
@@ -69,22 +77,58 @@ class Analyze
                 priority[i] = newPriority;
                 score[i] = newScore;
                 status[i] = parts[4];
-
+                countCurrectLine++;
             }
-
-
             
-
-
         }
+        return countCurrectLine;
     }
-    //static void inEnum(Enum enumName,string data)
-    //{
-        
-    //    if (Enum.TryParse(data,true,out enumName newData))
-    //    {
+    static double CalculateAverage(int numCurrect, double[] score)
+    {
 
-    //    }
-    //}
-    
+        double numOfAllScore = 0.0;
+        for(int i =0;i<numCurrect;i++)
+        {
+            numOfAllScore += score[i];
+            
+        }
+        Console.WriteLine(numOfAllScore / numCurrect);
+        return numOfAllScore / numCurrect;
+    }
+    static double FindMaxScore(double[]score)
+    {
+        double maxNum = 0.0;
+        for(int i = 0;i<score.Length;i++)
+        {
+            
+            if (score[i]>maxNum)
+            {
+                maxNum = score[i];
+            }
+        }
+        Console.WriteLine(maxNum);
+        return maxNum;
+    }
+    static double FindMinScore(int numCurrect, double[] score)
+    {
+        double minScore = 0.0;
+        for (int i = 0; i < numCurrect; i++)
+        {
+            if (i == 0)
+            {
+                minScore = score[i];
+            }
+            else
+            {
+                if (minScore > score[i])
+                    minScore = score[i];
+            }  
+        }
+        Console.WriteLine(numCurrect);
+        Console.WriteLine(minScore);
+        return minScore;
+    }
+
+
+
 }
