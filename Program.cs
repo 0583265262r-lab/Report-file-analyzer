@@ -27,6 +27,8 @@ class Analyze
         DisplayBasicStatistics(Score, numCurrect);
         DisplayStatusCounts(Status, numCurrect);
         DisplayTypeCounts(ReportType, numCurrect);
+        DisplayHighestPriorityApproved(UnitName, ReportType, Priority, Score, Status,numCurrect);
+        DisplayAverageByPriority(Priority,Score,numCurrect);
         
     }
     static string[]? LoadFile(string path)
@@ -148,7 +150,7 @@ class Analyze
                 countStarus+=1;
             }
         }
-        Console.WriteLine(countStarus);
+        //Console.WriteLine(countStarus);
         return countStarus;
     }
     static int CountByType(string[] arrType, string type, int numCurrect)
@@ -161,7 +163,7 @@ class Analyze
                 countType++;
             }
         }
-        Console.WriteLine(countType);
+        //Console.WriteLine(countType);
         return countType;
     }
     static void DisplayBasicStatistics(double[] score, int numCurrect)
@@ -173,7 +175,7 @@ class Analyze
         Console.WriteLine($"Total Reports: {numCurrect}");
         Console.WriteLine($"Average Score: {ave:F2}");
         Console.WriteLine($"Highest Score: {max}");
-        Console.WriteLine($"Lowest Score: {min}");
+        Console.WriteLine($"Lowest Score: {min}\n");
     }
     static void DisplayStatusCounts(string[]reportStatus,int numCurrect)
     {
@@ -183,7 +185,7 @@ class Analyze
         Console.WriteLine("=== Reports by Status ===");
         Console.WriteLine($"Pending: {pending}");
         Console.WriteLine($"Approved: {approved}");
-        Console.WriteLine($"Rejected: {rejected}");
+        Console.WriteLine($"Rejected: {rejected}\n");
     }
     static void DisplayTypeCounts(string[] reportType, int numCurrect)
     {
@@ -195,7 +197,93 @@ class Analyze
         Console.WriteLine($"Collect: {collect}");
         Console.WriteLine($"Analyze: {analyzer}");
         Console.WriteLine($"Recon: {recon}");
-        Console.WriteLine($"Intel: {intel}");
+        Console.WriteLine($"Intel: {intel}\n");
+
+    }
+    static void DisplayHighestPriorityApproved(string[] unitName, string[] reportType, int[] priority, double[] score, string[] status,int numCurrect)
+    {
+        int indexHighestPriority = 0;
+        int highestPriority = 0;
+        for (int i = 0; i < numCurrect;i++)
+        {
+            if (status[i] == "Approved")
+            {
+                if (priority[i]>highestPriority)
+                {
+                    highestPriority = priority[i];
+                    indexHighestPriority = i;
+                }
+            }
+        }
+        Console.WriteLine("=== Highest Priority Approved Report ===");
+        Console.WriteLine($"Unit: {unitName[indexHighestPriority]}");
+        Console.WriteLine($"Type: {reportType[indexHighestPriority]}");
+        Console.WriteLine($"Priority: {priority[indexHighestPriority]}");
+        Console.WriteLine($"Score: {score[indexHighestPriority]}\n");
+    }
+    static void DisplayAverageByPriority(int[] priority, double[] score,int numCurrect)
+    {
+        double scorePriority1 = 0.0;
+        int priority1 = 0;
+        double scorePriority2 = 0.0;
+        int priority2 = 0;
+        double scorePriority3 = 0.0;
+        int priority3 = 0;
+        double scorePriority4 = 0.0;
+        int priority4 = 0;
+        double scorePriority5 = 0.0;
+        int priority5 = 0;
+        
+        for (int i= 0; i < numCurrect; i++)
+        {
+            if (priority[i] == 1)
+            {
+                priority1 += 1;
+                scorePriority1 += score[i];
+            }
+            if (priority[i] == 2)
+            {
+                priority2 += 1;
+                scorePriority2 += score[i];
+            }
+            if (priority[i] == 3)
+            {
+                priority3 += 1;
+                scorePriority3 += score[i];
+            }
+            if (priority[i] == 4)
+            {
+                priority4 += 1;
+                scorePriority4 += score[i];
+            }
+            if (priority[i] == 5)
+            {
+                priority5 += 1;
+                scorePriority5 += score[i];
+            }
+
+        }
+        Console.WriteLine("=== Average Score by Priority ===");
+        if (priority1 != 0)
+        { Console.WriteLine($"priority 1: {(scorePriority1/priority1):F2}"); }
+        else
+        { Console.WriteLine("Priority 1: No reports"); }
+        if (priority2 != 0)
+        { Console.WriteLine($"priority 2: {(scorePriority2 / priority2):F2}"); }
+        else
+        { Console.WriteLine("Priority 2: No reports"); }
+        if (priority3 != 0)
+        { Console.WriteLine($"priority 3: {(scorePriority3 / priority3):F2}"); }
+        else
+        { Console.WriteLine("Priority 3: No reports"); }
+        if (priority4 != 0)
+        { Console.WriteLine($"priority 4: {(scorePriority4 / priority4):F2}"); }
+        else
+        { Console.WriteLine("Priority 4: No reports"); }
+        if (priority5 != 0)
+        { Console.WriteLine($"priority 5: {(scorePriority5 / priority5):F2}"); }
+        else
+        { Console.WriteLine("Priority 5: No reports"); }
 
     }
 
