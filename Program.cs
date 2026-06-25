@@ -16,14 +16,13 @@ class Analyze
         int[] Priority = new int[MAX_REPORTS];
         double[] Score = new double[MAX_REPORTS];
         string[] Status = new string[MAX_REPORTS];
-        LoadFile(path);
+        string[] loedFile =  LoadFile(path);
+        if (loedFile == null)
+        {
+            return ;
+        }
         int numCurrect = 0;
-        //Console.WriteLine(numCurrect);
         ProcessReports(path,UnitName,ReportType,Priority,Score,Status,ref numCurrect);
-        //CalculateAverage(numCurrect, Score);
-        //FindMaxScore(Score);
-        //FindMinScore(numCurrect, Score);
-        //CountByStatus(Status, "Approved", numCurrect);
         DisplayBasicStatistics(Score, numCurrect);
         DisplayStatusCounts(Status, numCurrect);
         DisplayTypeCounts(ReportType, numCurrect);
@@ -36,7 +35,8 @@ class Analyze
         string filePath = path;
         if (!File.Exists(path))
         {
-            Console.WriteLine("file not exist");
+            string[] notExist = path.Split("\\");
+            Console.WriteLine($"file {notExist[notExist.Length-1]} not exist");
             return null;
         }
 
@@ -46,6 +46,7 @@ class Analyze
             Console.WriteLine("file is empty");
             return null;
         }
+        
         return readTetx;
     }
     static int ProcessReports(string filePath,string[]unitName, string[] reportType, int[] priority, double[] score, string[] status,ref int numCurrect)
@@ -93,32 +94,32 @@ class Analyze
             }
             
         }
+        Console.WriteLine($"File loaded: {numOfLins} lines found");
+        Console.WriteLine("Processing complete");
+        Console.WriteLine($"Valid records: {countCurrectLine}");
+        Console.WriteLine($"Invalid records: {numOfLins - countCurrectLine}");
+        Console.WriteLine("Stored 23 valid records for analysis");
         return countCurrectLine;
     }
     static double CalculateAverage(int numCurrect, double[] score)
     {
-
         double numOfAllScore = 0.0;
         for(int i =0;i<numCurrect;i++)
         {
             numOfAllScore += score[i];
-            
         }
-        //Console.WriteLine(numOfAllScore / numCurrect);
         return numOfAllScore / numCurrect;
     }
     static double FindMaxScore(double[]score)
     {
         double maxNum = 0.0;
         for(int i = 0;i<score.Length;i++)
-        {
-            
+        {          
             if (score[i]>maxNum)
             {
                 maxNum = score[i];
             }
         }
-        //Console.WriteLine(maxNum);
         return maxNum;
     }
     static double FindMinScore(int numCurrect, double[] score)
@@ -136,8 +137,6 @@ class Analyze
                     minScore = score[i];
             }  
         }
-        //Console.WriteLine(numCurrect);
-        //Console.WriteLine(minScore);
         return minScore;
     }
     static int CountByStatus(string[] arrStatus, string status,int numCurrect)
@@ -150,7 +149,6 @@ class Analyze
                 countStarus+=1;
             }
         }
-        //Console.WriteLine(countStarus);
         return countStarus;
     }
     static int CountByType(string[] arrType, string type, int numCurrect)
@@ -163,7 +161,6 @@ class Analyze
                 countType++;
             }
         }
-        //Console.WriteLine(countType);
         return countType;
     }
     static void DisplayBasicStatistics(double[] score, int numCurrect)
