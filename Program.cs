@@ -21,8 +21,8 @@ class Analyze
         {
             return ;
         }
-        int numCurrect = 0;
-        ProcessReports(path,UnitName,ReportType,Priority,Score,Status,ref numCurrect);
+
+        int numCurrect = ProcessReports(path,UnitName,ReportType,Priority,Score,Status);
         DisplayBasicStatistics(Score, numCurrect);
         DisplayStatusCounts(Status, numCurrect);
         DisplayTypeCounts(ReportType, numCurrect);
@@ -30,9 +30,9 @@ class Analyze
         DisplayAverageByPriority(Priority,Score,numCurrect);
         
     }
+
     static string[]? LoadFile(string path)
     {
-        string filePath = path;
         if (!File.Exists(path))
         {
             string[] notExist = path.Split("\\");
@@ -43,37 +43,31 @@ class Analyze
         string[] readTetx = File.ReadAllLines(path);
         if (readTetx.Length == 0)
         {
-            Console.WriteLine("file is empty");
+            string[] notExist = path.Split("\\");
+            Console.WriteLine($"file {notExist[notExist.Length - 1]} is empty");
             return null;
         }
         
         return readTetx;
     }
-    static int ProcessReports(string filePath,string[]unitName, string[] reportType, int[] priority, double[] score, string[] status,ref int numCurrect)
+    static int ProcessReports(string filePath,string[]unitName, string[] reportType, int[] priority, double[] score, string[] status)
     {
         int countCurrectLine = 0;
-        numCurrect = 0;
         string[] currentdata = LoadFile(filePath);
-        int numOfLins = currentdata.Length;
-        
 
-
-        for (int i = 0; i < numOfLins; i++)
+        for (int i = 0; i < currentdata.Length; i++)
         {
 
             string[] parts = currentdata[i].Split(",");
-            if (parts.Length != 5)
-            {
-                
-                continue;}
+            if (parts.Length != 5)  
+            {continue;}
             if (parts[0].Trim()=="")
-            {
-               continue;}
+            {continue;}
             if (!Enum.TryParse(parts[1], true, out ReportType newData))
             {continue;}
             if (!int.TryParse(parts[2], out int newPriority))
             {continue;}
-            if (newPriority<1 | newPriority>5)
+            if (newPriority<1 | newPriority>5 ) 
             {continue;}
             if (!double.TryParse(parts[3],out double newScore))
             {continue;}
@@ -89,16 +83,14 @@ class Analyze
                 priority[countCurrectLine] = newPriority;
                 score[countCurrectLine] = newScore;
                 status[countCurrectLine] = parts[4];
-                countCurrectLine++;
-                numCurrect++;
+                countCurrectLine++;           
             }
-            
         }
-        Console.WriteLine($"File loaded: {numOfLins} lines found");
+        Console.WriteLine($"File loaded: {currentdata.Length} lines found");
         Console.WriteLine("Processing complete");
         Console.WriteLine($"Valid records: {countCurrectLine}");
-        Console.WriteLine($"Invalid records: {numOfLins - countCurrectLine}");
-        Console.WriteLine("Stored 23 valid records for analysis");
+        Console.WriteLine($"Invalid records: {currentdata.Length - countCurrectLine}");
+        Console.WriteLine($"Stored {countCurrectLine} valid records for analysis");
         return countCurrectLine;
     }
     static double CalculateAverage(int numCurrect, double[] score)
@@ -171,8 +163,8 @@ class Analyze
         Console.WriteLine("=== Report Statistics ===");
         Console.WriteLine($"Total Reports: {numCurrect}");
         Console.WriteLine($"Average Score: {ave:F2}");
-        Console.WriteLine($"Highest Score: {max}");
-        Console.WriteLine($"Lowest Score: {min}\n");
+        Console.WriteLine($"Highest Score: {max:F1}");
+        Console.WriteLine($"Lowest Score: {min:F1}\n");
     }
     static void DisplayStatusCounts(string[]reportStatus,int numCurrect)
     {
@@ -258,7 +250,6 @@ class Analyze
                 priority5 += 1;
                 scorePriority5 += score[i];
             }
-
         }
         Console.WriteLine("=== Average Score by Priority ===");
         if (priority1 != 0)
@@ -281,9 +272,5 @@ class Analyze
         { Console.WriteLine($"priority 5: {(scorePriority5 / priority5):F2}"); }
         else
         { Console.WriteLine("Priority 5: No reports"); }
-
     }
-
-
-
 }
