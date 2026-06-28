@@ -273,4 +273,8 @@ class Analyze
         else
         { Console.WriteLine("Priority 5: No reports"); }
     }
+    //static void DisplayAverageByUnit(string unit, double[] score, int numCurrect)
+    //{
+
+    //}
 }
